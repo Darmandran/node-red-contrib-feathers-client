@@ -153,6 +153,7 @@ module.exports = function(RED) {
 
             this.on('input', function(msg) {
                 var query,service, id;
+                id = msg.hasOwnProperty('id') ? msg.id : node.id;   // was missing
                 service = msg.hasOwnProperty('service') ? msg.service : node.service;
                 if (!service) {
                     //query = {};
@@ -241,10 +242,8 @@ module.exports = function(RED) {
             console.log('inside do connect');
             node.connecting = true;
             node.emit("state", "connecting");
-            const url = `http://${node.host}:${node.port}`;
-            const socket = io(url,{
-                transports: ['websocket']
-            });
+            const url = `${node.host}:${node.port}`; //so the host address can be used http or https, need to specify the port, including 80 or 443
+            const socket = io(url); // removed transports: ['websocket']
             const client = feathers();
 
             client.configure(socketio(socket));
